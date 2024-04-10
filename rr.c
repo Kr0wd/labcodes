@@ -1,22 +1,54 @@
 #include<stdio.h>
-#include<unistd.h>
-#define MAX 10
+#define MAX 30
+int q[MAX],front = -1, rear = -1;
 struct process
 {
-	int at,bt,ct,no,tt,wt;
+	int at,bt,ct,no,tt,wt,rbt;
 };
+void enqueue(int item)
+{
+	if (front == -1)
+		front = 0;
+	q[++rear] = item;
+}
+int dequeue()
+{
+	int id=-1;
+	id = q[front];
+	if (front == rear)
+		front = rear = -1;
+	else
+		front = front + 1;
+	return id;
+}
+void display()
+{
+	int i;
+	if (front == -1)
+		printf("Empty Queue\n");
+	else
+	{
+		printf("Queue :");
+		for (i = front;i< rear; i++)
+			printf("%d ", q[i]);
+		printf("%d \n", q[i]);
+	}
+}
 void main()
 {
-	int loc,min,time,i,n,j,g;
+	int time=0,nextp,temp,i,n,j=0,g=0,tq;
 	float tat=0,twt=0;
 	struct process p[MAX],key,gant[MAX],idle;
 	printf("Enter the number of processes :");
 	scanf("%d",&n);
+    printf("Enter the Time quantum :");
+	scanf("%d",&tq);
 	for(i=0;i<n;i++)
 	{
 		printf("Enter Arrival time and Burst Time of process %d : \n",i+1);
 		scanf("%d%d",&p[i].at,&p[i].bt);
 		p[i].no=i+1;
+        p[i].rbt=p[i].bt;
 	}
 	for (i = 1; i < n; i++) {
         key = p[i];
@@ -28,17 +60,28 @@ void main()
         p[j + 1] = key;
     }
 	idle.bt=0;
-	for(i=0,g=0,time=0;i<n;i++)
-	{
-		if(time<p[i].at)
-		{
-			gant[g]=idle;
-    		gant[g++].ct=time=p[i].at;
-		}
-    	time+=p[i].bt;
-    	p[i].ct=time;
-    	gant[g++]=p[i];
-	}
+	j=0;
+	while(front >=0 || j < n)
+    {
+        for(;j<n&&p[j].at<=time;j++)
+    		enqueue(j);
+    	if(g!=0&&p[nextp].rbt!=0)
+            enqueue(nextp);
+        if(front >= 0){
+            nextp=dequeue();
+            gant[g]=p[nextp];
+            temp=((tq<gant[g].rbt)?tq:gant[g].rbt);
+            time+=temp;
+            p[nextp].rbt-=temp;
+    		gant[g++].ct=time;
+            p[nextp].ct=time;;
+        }
+        else
+        {
+            gant[g]=idle;
+            gant[g++].ct=time=p[j].at;
+        }        
+    }
 	for(i=0;i<n;i++)
 	{
 		p[i].tt=p[i].ct-p[i].at;
