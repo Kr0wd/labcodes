@@ -24,11 +24,15 @@ void main() {
     for(i = 0; i < m; i++) {
         scanf("%d", &available[i]);
     }
+    //Here, the program calculates the available resources by 
+    //subtracting the allocated resources from the maximum available resources for each resource type.
     for(i = 0; i < m; i++) {
         for(j = 0; j < n; j++) {
             available[i]-=allocated[j][i];
         }
     }
+    //This loop calculates the need matrix by 
+    //subtracting the allocated resources from the maximum resources for each process and resource type.
     for(i = 0; i < n; i++) {
         for(j = 0; j < m; j++) {
             need[i][j] = max[i][j] - allocated[i][j];
@@ -64,6 +68,8 @@ void main() {
     for(i=0; i<m; i++) {
         scanf("%d",&req[i]);
     }
+    //This loop checks if the request can be granted without leading to deadlock.
+    // It ensures that the request does not exceed the available resources and the maximum need of the process.
     f=0;
     for(i=0; i<m; i++)
     {
@@ -73,6 +79,8 @@ void main() {
             break;
         }
     }
+    //If the request is valid, this block of code 
+    //updates the allocation, need, and available matrices accordingly.
     if(f==0)
     {
         printf("Request Status : Successfull\n");
@@ -105,6 +113,8 @@ void main() {
             }
             printf("\n");
         }
+        //This block of code checks for deadlock by attempting to find a safe sequence of processes to execute.
+        // If a safe sequence is found, it executes the processes and updates the available resources.
         int c=0;
         f=0;
         for(i=0; i<n; i++) {
@@ -149,3 +159,27 @@ void main() {
     else
         printf("\nRequest status : Fail\n");
 }
+
+//1. **Initialization**: `c` is initialized to 0 to track the number of processes executed in a safe sequence, and `f` is set to 0 to indicate no resource-request conflicts initially.
+
+//2. **Nested Loops**: Two nested loops are used to iterate over each process (`i`) and each process again (`j`). This is done to ensure that all processes are considered for execution.
+
+//3. **Check if Process can be Executed**: Within the nested loops, the code checks if the process `j` can be executed. This is determined by whether the process `j` has already finished (`finish[j]==0`) and if the available resources are sufficient for the process's needs.
+
+//4. **Inner Loop**: Inside the nested loops, another loop iterates through each resource type (`k`) to compare the available resources (`available[k]`) with the resource needs of process `j` (`need[j][k]`).
+
+//5. **Check for Resource Availability**: If any resource type lacks sufficient availability to fulfill process `j`'s needs, `f` is set to 1, indicating a conflict.
+
+//6. **Execute Process if No Conflict**: If `f` remains 0 after checking all resource types, it means that process `j` can be executed safely. The program then updates the available resources, marks process `j` as finished (`finish[j]=1`), increments the count of executed processes (`count`), and stores the executed process index in the `w` array.
+
+//7. **Update Available Resources**: The available resources are updated by adding the allocated resources of the executed process `j`.
+
+//8. **Print Execution Status**: It prints the execution status of process `j` along with the updated available resources.
+
+//9. **Reset `f`**: After each inner loop iteration (checking all resources for process `j`), `f` is reset to 0 to prepare for the next process iteration.
+
+//10. **Safety Sequence**: The array `w` stores the indices of the processes executed in a safe sequence.
+
+//11. **Print Safety Sequence**: If all processes can be executed safely (`count==n`), it prints the safety sequence along with the status "Deadlock Free". Otherwise, it indicates a deadlock condition.
+
+//This block of code is crucial for determining whether the system is in a safe state and finding a safe sequence of processes to execute, thereby preventing deadlocks.
