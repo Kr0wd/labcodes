@@ -21,24 +21,11 @@ int dequeue()
 		front = front + 1;
 	return id;
 }
-void display()
-{
-	int i;
-	if (front == -1)
-		printf("Empty Queue\n");
-	else
-	{
-		printf("Queue :");
-		for (i = front;i< rear; i++)
-			printf("%d ", q[i]);
-		printf("%d \n", q[i]);
-	}
-}
 void main()
 {
-	int time=0,nextp,temp,i,n,j=0,g=0,tq;
+	int time=0,nextp=-1,i,n,temp,j=0,g=0,tq;
 	float tat=0,twt=0;
-	struct process p[MAX],key,gant[MAX],idle;
+	struct process temp1,p[MAX],key,gant[MAX],idle;
 	printf("Enter the number of processes :");
 	scanf("%d",&n);
     printf("Enter the Time quantum :");
@@ -50,38 +37,41 @@ void main()
 		p[i].no=i+1;
         p[i].rbt=p[i].bt;
 	}
-	for (i = 1; i < n; i++) {
-        key = p[i];
-        j = i - 1;
-        while (j >= 0 && p[j].at > key.at) {
-            p[j + 1] = p[j];
-            j = j - 1;
-        }
-        p[j + 1] = key;
-    }
+	for (i = 0; i < n-1; i++) 
+	{
+        	for (j = 0; j < n-1; j++) 
+		{
+        		if(p[j].at>p[j+1].at)
+        		{
+        			temp1=p[j];
+        			p[j]=p[j+1];
+        			p[j+1]=temp1;
+        		}
+        	}
+    	}
 	idle.bt=0;
 	j=0;
 	while(front >=0 || j < n)
-    {
-        for(;j<n&&p[j].at<=time;j++)
-    		enqueue(j);
-    	if(g!=0&&p[nextp].rbt!=0)
-            enqueue(nextp);
-        if(front >= 0){
-            nextp=dequeue();
-            gant[g]=p[nextp];
-            temp=((tq<gant[g].rbt)?tq:gant[g].rbt);
-            time+=temp;
-            p[nextp].rbt-=temp;
-    		gant[g++].ct=time;
-            p[nextp].ct=time;;
-        }
-        else
-        {
-            gant[g]=idle;
-            gant[g++].ct=time=p[j].at;
-        }        
-    }
+    	{
+        	for(;j<n&&p[j].at<=time;j++)
+    			enqueue(j);
+        	if(front >= 0){
+        	    nextp=dequeue();
+        	    gant[g]=p[nextp];
+        	    temp=((tq<gant[g].rbt)?tq:gant[g].rbt);
+        	    time+=temp;
+        	    p[nextp].rbt-=temp;
+    			gant[g++].ct=time;
+        	    p[nextp].ct=time;;
+        	}
+        	else
+        	{
+        	    gant[g]=idle;
+        	    gant[g++].ct=time=p[j].at;
+        	}   
+        	if(nextp!=-1&&p[nextp].rbt!=0)
+        	    enqueue(nextp);
+    	}	
 	for(i=0;i<n;i++)
 	{
 		p[i].tt=p[i].ct-p[i].at;
@@ -90,17 +80,21 @@ void main()
 		tat=tat+p[i].tt;
 	}
 	printf("Gantt chart:\n");
-    for(i=0;i<g;i++)
+    	for(i=0;i<g-1;i++)
 	{
 		if(gant[i].bt==0)
 			printf("| Idle   ");
-		else
+		else if(gant[i].no!=gant[i+1].no)
 			printf("| p%d    ",gant[i].no);
 	}
-	printf("|\n");
+	printf("| p%d    |\n",gant[i].no);
 	printf("0\t");  
-	for(i=0;i<g;i++)
-		printf("%2d\t",gant[i].ct);
+	for(i=0;i<g-1;i++)
+	{
+		if(gant[i].no!=gant[i+1].no)
+			printf("%2d\t",gant[i].ct);
+	}
+	printf("%2d\t",gant[i].ct);
 	printf("\nTable :\n");
 	printf(" _________________________________\n");
 	printf("|Process| AT | BT | CT | TT | WT |\n");
