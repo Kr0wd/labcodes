@@ -32,8 +32,6 @@ int main() {
     p[i].no = i + 1;
     p[i].rbt = p[i].bt;
   }
-
-  // sort based on arrival time
   for (i = 1; i < n; i++) {
     key = p[i];
     j = i - 1;
