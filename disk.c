@@ -1,7 +1,22 @@
 #include<stdio.h>
-#include<stdlib.h>
 #define MAX 20
 int temp;
+int *sort(int a[],int n)
+{
+	for(int i=0;i<n-1;i++)
+	{
+		for(int j=0;j<n-1;j++)
+		{
+			if(a[j]>a[j+1])
+			{
+				temp=a[j];
+				a[j]=a[j+1];
+				a[j+1]=temp;
+			}
+		}
+	}
+	return a;
+}
 void fcfs(int a[],int n)
 {
 	int i,total=0;
@@ -9,7 +24,66 @@ void fcfs(int a[],int n)
 	for(i=0;i<n;i++)
 	{
 		printf("%d ",a[i+1]);		
-		temp=abs(a[i+1]-a[i]);
+		temp=a[i+1]-a[i];
+		temp=(temp<0)?temp*(-1):temp;
+		total+=temp;
+	}
+	printf("\nTotal head movement = %d \n",total);
+}
+void scan(int a[],int n,int start)
+{
+	int c,total=0,loc,i,j,min,max,inc,b[MAX];
+	printf("Chosse 1:left or 2:right :");
+	scanf("%d",&c);
+	printf("Enter the Start and End of disk :");
+	scanf("%d%d",&min,&max);
+	a[++n]=min,a[++n]=max;
+	a=sort(a,++n);
+	for(i=0;i<n&&a[i]!=start;i++);
+	loc=i;
+	inc=(c==1)?(-1):1;
+	for(i=loc,j=0;i>=0&&i<n;)
+	{
+		b[j++]=a[i];
+		i+=inc;
+		if((i<0||i>n-1)&&j<n-1)
+			inc*=(-1),i=loc+inc;
+	}
+	printf("Sequence : %d ",b[0]);
+	for(i=0;i<n-1;i++)
+	{
+		printf("%d ",b[i+1]);		
+		temp=b[i+1]-b[i];
+		temp=(temp<0)?temp*(-1):temp;
+		total+=temp;
+	}
+	printf("\nTotal head movement = %d \n",total);
+}
+void cscan(int a[],int n,int start)
+{
+	int c,total=0,loc,i,j,min,max,inc,b[MAX];
+	printf("Chosse 1:left or 2:right :");
+	scanf("%d",&c);
+	printf("Enter the Start and End of disk :");
+	scanf("%d%d",&min,&max);
+	a[++n]=min,a[++n]=max;
+	a=sort(a,++n);
+	for(i=0;i<n&&a[i]!=start;i++);
+	loc=i;
+	inc=(c==1)?(-1):1;
+	for(i=loc,j=0;j<n;)
+	{
+		b[j++]=a[i];
+		i+=inc;
+		if((i<=0||i>=n-1)&&j<n-1)
+			i=(i==0)?(n-1):0;
+	}
+	printf("Sequence : %d ",b[0]);
+	for(i=0;i<n-1;i++)
+	{
+		printf("%d ",b[i+1]);		
+		temp=b[i+1]-b[i];
+		temp=(temp<0)?temp*(-1):temp;
 		total+=temp;
 	}
 	printf("\nTotal head movement = %d \n",total);
@@ -23,5 +97,17 @@ void main() {
 	printf("Enter the starting position :");
 	scanf("%d",&start);
 	a[0]=start;
-	fcfs(a,n);
+	do{
+		printf("Enter 1:FCFS 2:SCAN 3:CSCAN 4:Exit :\n");
+		scanf("%d",&ch);
+		switch(ch){
+			case 1:	fcfs(a,n);
+					break;
+			case 2:scan(a,n,start);
+					break;
+			case 3:cscan(a,n,start);
+			case 4:break;
+			default:printf("Invalid input\n");
+		}
+	}while(ch!=4);
 }
